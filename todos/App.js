@@ -6,8 +6,6 @@ import {
   Text,
   Button,
   TextInput,
-  Modal,
-  TouchableHighlight,
 } from 'react-native';
 import {
   Colors,
@@ -22,14 +20,13 @@ export default class App extends Component {
     super(props);
     this.state = {
       text: '',
-      todos: exampleData,
-      modalVisible: false
+      todos: exampleData
     }
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleButtonClick = this.handleButtonClick.bind(this);
     this.getTodos = this.getTodos.bind(this);
     this.handleDeleteClick = this.handleDeleteClick.bind(this);
-    this.setModalVisible = this.setModalVisible.bind(this);
+    this.handleUpdateClick = this.handleUpdateClick.bind(this);
     this.number = 0;
   }
 
@@ -50,7 +47,6 @@ export default class App extends Component {
       }
     }).then(realm => {
       // console.log(realm.path)
-      // console.log(todos);
       let todos = Array.from(realm.objects('Todo'));
       const state = Object.assign({}, this.state)
       state.todos = todos
@@ -78,27 +74,42 @@ export default class App extends Component {
     }).then(()=> {
       this.getTodos()
       this.setState({ text: '' })
-      alert('To do submitted!');
+      alert('Todo submitted!');
     });
   }
 
   handleDeleteClick() {
-    alert('delete clicked!');
+    alert('todo deleted!');
   }
 
   setModalVisible() {
-    // this.state.modalVisible = !this.state.modalVisible;
-    // if (this.state.modalVisible) {
-
-    // }
-    console.log(this.state)
+    console.log(this.refs)
     const state = Object.assign({}, this.state);
     state.modalVisible = !state.modalVisible;
     this.setState(state)
   }
+
+  handleUpdateClick(e) {
+    console.log(e.nativeEvent)
+    Realm.open({
+      schema: [{name: 'Todo', properties: {id: 'int', text: 'string'}}],
+      schemaVersion: 1,
+    }).then(realm => {
+      realm.write(() => {
+        var realmDB = Array.from(realm.objects('Todo'));
+        for (var i = 0; i < realmDB.length; i++) {
+          console.log(realmDB[i].text)
+        }
+      });
+      console.log('added todo');
+    }).then(()=> {
+      this.getTodos()
+      this.setState({ text: '' })
+      alert('Todo submitted!');
+    });
+  }
   
   render() {
-    // console.log('hello')
     return (
       <SafeAreaView style={styles.container}>
         <View>
@@ -112,31 +123,7 @@ export default class App extends Component {
             placeholder="Add something here"
           />
         </View>
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-          }}>
-            <View style={styles.modal}>
-            <View>
-              <TextInput
-                style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-                onChangeText={this.handleInputChange}
-                value={this.state.text}
-                placeholder="Update Todo"
-              />
-              <TouchableHighlight
-                onPress={() => {
-                  this.setModalVisible(!this.state.modalVisible);
-                }}>
-                <Text style={styles.modalText}>Hide Modal</Text>
-              </TouchableHighlight>
-            </View>
-          </View>
-        </Modal>
-        <View>
+        <View style={styles.todolist}>
           <TodoList todos={this.state.todos} handleDeleteClick={this.handleDeleteClick} getTodos={this.getTodos} setModalVisible={this.setModalVisible}/>
         </View>
         <View style={styles.footer}>
@@ -166,14 +153,6 @@ const styles = StyleSheet.create({
   body: {
     backgroundColor: Colors.white,
   },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
   button: {
     position: 'absolute',
   },
@@ -181,12 +160,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  todolist: {
+    maxHeight: 400
+  },
   modalText: {
     marginTop: 30,
     marginBottom: 30,
   }
 });
-
-
 
 //  https://kennys-todos.us1a.cloud.realm.io
