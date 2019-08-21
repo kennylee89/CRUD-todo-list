@@ -119,13 +119,14 @@ class TodoListEntry extends Component {
 
 const styles = StyleSheet.create({
   entry: {
-    height: 120,
+    height: 140,
     flex: 1,
   },
   button: {
     flexDirection: 'row',
     alignSelf: 'flex-start',
     marginBottom: 20,
+    marginTop: 20,
   },
   text: {
     fontSize: 30,

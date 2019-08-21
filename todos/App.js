@@ -145,6 +145,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 1,
   },
+  header: {
+    
+  }
   title: {
     fontSize: 25,
     fontWeight: '500',
@@ -161,7 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   todolist: {
-    maxHeight: 400
+    maxHeight: 450,
   },
   modalText: {
     marginTop: 30,
